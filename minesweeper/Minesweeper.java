@@ -3,7 +3,9 @@ import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 public class Minesweeper extends Application {
@@ -66,6 +68,11 @@ public class Minesweeper extends Application {
             mines = (int) (Math.random() * 99);
 
             difficultySet = true;
+            try {
+                create();
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
         }
 
         /**
@@ -86,6 +93,11 @@ public class Minesweeper extends Application {
             this.mines = mines;
 
             difficultySet = true;
+            try {
+                create();
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
         }
 
         /**
@@ -115,8 +127,16 @@ public class Minesweeper extends Application {
             }
 
             difficultySet = true;
+            try {
+                create();
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
         }
 
+        /**
+         * Draw the game onto the canvas
+         */
         public void draw() {
             ctx.setFill(Color.GREY);
             ctx.fillRect(0, 0, getWidth(), getHeight());
@@ -134,6 +154,19 @@ public class Minesweeper extends Application {
         }
     }
 
+    private class DifficultyButton extends Button {
+        public DifficultyButton(String label) {
+            super(label);
+
+            if (label.toLowerCase().equals("random"))
+                setOnMousePressed(e -> game.setDifficulty());
+            else
+                setOnMousePressed(e -> game.setDifficulty(label));
+
+            game.draw();
+        }
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -141,15 +174,27 @@ public class Minesweeper extends Application {
     private Game game = new Game();
 
     public void start(Stage stage) {
+        // Create the game
         try {
-            game.setDifficulty("expert");
+            game.setDifficulty(9, 9, 10);
             game.create();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
 
-        var root = new BorderPane(game);
+        // Add buttons for difficulty
+        var easy = new DifficultyButton("Beginner");
+        var intermediate = new DifficultyButton("Intermediate");
+        var expert = new DifficultyButton("Expert");
+        var random = new DifficultyButton("Random");
+        var controls = new HBox(easy, intermediate, expert, random);
 
+        // Create root
+        var root = new BorderPane();
+        root.setCenter(game);
+        root.setBottom(controls);
+
+        // Create scene
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Minesweeper");
