@@ -2,7 +2,9 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 
 public class Minesweeper extends Application {
     private class Game extends Canvas {
@@ -12,13 +14,18 @@ public class Minesweeper extends Application {
             }
         }
 
-        private static final int MAX_SIZE = 400;
+        private static final int MAX_SIZE = 600;
+        private static final int PADDING = 10;
+        private static final int CELL_PADDING = 1;
 
         private boolean difficultySet = false;
 
         private int rows;
         private int cols;
         private int mines;
+        private double tileSize;
+
+        private GraphicsContext ctx = getGraphicsContext2D();
 
         /**
          * Check that the game is correctly initialised
@@ -43,9 +50,11 @@ public class Minesweeper extends Application {
             if (!isInitialised())
                 throw new NotSetupException();
 
-            int tileSize = MAX_SIZE / Math.max(rows, cols);
-            setWidth(rows * tileSize);
-            setHeight(cols * tileSize);
+            tileSize = (MAX_SIZE - PADDING) / Math.max(rows, cols);
+            setWidth(cols * tileSize + PADDING);
+            setHeight(rows * tileSize + PADDING);
+
+            draw();
         }
 
         /**
@@ -107,6 +116,22 @@ public class Minesweeper extends Application {
 
             difficultySet = true;
         }
+
+        public void draw() {
+            ctx.setFill(Color.GREY);
+            ctx.fillRect(0, 0, getWidth(), getHeight());
+
+            ctx.setFill(Color.WHITE);
+            for (int i = 0; i < cols; i++) {
+                for (int j = 0; j < rows; j++) {
+                    double x = i * tileSize + CELL_PADDING + PADDING / 2;
+                    double y = j * tileSize + CELL_PADDING + PADDING / 2;
+                    double width = tileSize - CELL_PADDING * 2;
+                    double height = tileSize - CELL_PADDING * 2;
+                    ctx.fillRect(x, y, width, height);
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -116,6 +141,13 @@ public class Minesweeper extends Application {
     private Game game = new Game();
 
     public void start(Stage stage) {
+        try {
+            game.setDifficulty("expert");
+            game.create();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
         var root = new BorderPane(game);
 
         Scene scene = new Scene(root);
