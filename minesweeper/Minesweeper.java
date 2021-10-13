@@ -32,13 +32,49 @@ public class Minesweeper extends Application {
 
         public Game() {
             setOnMouseMoved(e -> onMouseMoved(e));
+            setOnMousePressed(e -> onMousePressed(e));
         }
 
+        /**
+         * Show the value of the tile
+         * 
+         * @param row The row of the tile
+         * @param col The column of the tile
+         */
+        private void checkTile(int row, int col) {
+            System.out.println("Check");
+        }
+
+        /**
+         * Flag a tile as a potential bomb
+         * 
+         * @param row The row of the tile
+         * @param col The column of the tile
+         */
+        private void flagTile(int row, int col) {
+            System.out.println("Flag");
+        }
+
+        /**
+         * Make a question mark for an unknown tile
+         * 
+         * @param row The row of the tile
+         * @param col The column of the tile
+         */
+        private void questionTile(int row, int col) {
+            System.out.println("Question");
+        }
+
+        /**
+         * Run whenever the mouse hovers over the field
+         * 
+         * @param e MouseEvent
+         */
         private void onMouseMoved(MouseEvent e) {
             draw();
 
-            double posX = Math.floor((e.getX() - PADDING / 2) / tileSize);
-            double posY = Math.floor((e.getY() - PADDING / 2) / tileSize);
+            int posX = (int) Math.floor((e.getX() - PADDING / 2) / tileSize);
+            int posY = (int) Math.floor((e.getY() - PADDING / 2) / tileSize);
             if (posX >= cols || posX < 0 || posY >= rows || posY < 0)
                 return;
 
@@ -48,6 +84,27 @@ public class Minesweeper extends Application {
 
             ctx.setFill(Color.BLACK);
             ctx.fillRect(x, y, size, size);
+        }
+
+        /**
+         * Run whenever the mouse presses a tile
+         * 
+         * @param e MouseEvent
+         */
+        private void onMousePressed(MouseEvent e) {
+            int posX = (int) Math.floor((e.getX() - PADDING / 2) / tileSize);
+            int posY = (int) Math.floor((e.getY() - PADDING / 2) / tileSize);
+            if (posX >= cols || posX < 0 || posY >= rows || posY < 0)
+                return;
+
+            if (e.isPrimaryButtonDown())
+                checkTile(posX, posY);
+            else if (e.isShiftDown() && e.isSecondaryButtonDown())
+                questionTile(posX, posY);
+            else if (e.isSecondaryButtonDown())
+                flagTile(posX, posY);
+
+            draw();
         }
 
         /**
