@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -17,7 +18,7 @@ public class Minesweeper extends Application {
         }
 
         private static final int MAX_SIZE = 600;
-        private static final int PADDING = 10;
+        private static final int PADDING = 20;
         private static final int CELL_PADDING = 1;
 
         private boolean difficultySet = false;
@@ -28,6 +29,26 @@ public class Minesweeper extends Application {
         private double tileSize;
 
         private GraphicsContext ctx = getGraphicsContext2D();
+
+        public Game() {
+            setOnMouseMoved(e -> onMouseMoved(e));
+        }
+
+        private void onMouseMoved(MouseEvent e) {
+            draw();
+
+            double posX = Math.floor((e.getX() - PADDING / 2) / tileSize);
+            double posY = Math.floor((e.getY() - PADDING / 2) / tileSize);
+            if (posX >= cols || posX < 0 || posY >= rows || posY < 0)
+                return;
+
+            double x = posX * tileSize + PADDING / 2 + CELL_PADDING;
+            double y = posY * tileSize + PADDING / 2 + CELL_PADDING;
+            double size = tileSize - CELL_PADDING * 2;
+
+            ctx.setFill(Color.BLACK);
+            ctx.fillRect(x, y, size, size);
+        }
 
         /**
          * Check that the game is correctly initialised
