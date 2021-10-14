@@ -27,6 +27,7 @@ public class Minesweeper extends Application {
         private int cols;
         private int mines;
         private double tileSize;
+        private int[][] state;
 
         private GraphicsContext ctx = getGraphicsContext2D();
 
@@ -134,6 +135,26 @@ public class Minesweeper extends Application {
             setWidth(cols * tileSize + PADDING);
             setHeight(rows * tileSize + PADDING);
 
+            // Create mines and determine tile distances here
+            assert mines < rows * cols;
+
+            int i = 0;
+            int[] mineIndex = new int[mines];
+
+            while (i < mines) { // TODO: FIX THIS ITS GARB
+                int index = (int) (Math.random() * (rows * cols));
+
+                for (int j = 0; j < mineIndex.length; j++) {
+                    if (index == mineIndex[j])
+                        continue;
+                }
+
+                mineIndex[i] = index;
+                i++;
+            }
+
+            // TODO: SET STATE OF GAME
+
             draw();
         }
 
@@ -146,11 +167,6 @@ public class Minesweeper extends Application {
             mines = (int) (Math.random() * 99);
 
             difficultySet = true;
-            try {
-                create();
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
-            }
         }
 
         /**
@@ -171,11 +187,6 @@ public class Minesweeper extends Application {
             this.mines = mines;
 
             difficultySet = true;
-            try {
-                create();
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
-            }
         }
 
         /**
@@ -205,11 +216,6 @@ public class Minesweeper extends Application {
             }
 
             difficultySet = true;
-            try {
-                create();
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
-            }
         }
 
         /**
