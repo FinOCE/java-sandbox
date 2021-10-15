@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -153,7 +155,20 @@ public class Minesweeper extends Application {
                 i++;
             }
 
-            // TODO: SET STATE OF GAME
+            // Set state with mines
+            this.state = new int[cols][rows];
+
+            for (int y = 0; y < cols; y++)
+                Arrays.fill(this.state[y], -1); // -1 will represent not set
+
+            for (int index : mineIndex)
+                state[index % cols][index / cols] = 0;
+
+            for (int y = 0; y < state.length; y++) {
+                for (int x = 0; x < state[y].length; x++) {
+                    System.out.printf("%d %d %d\n", x, y, state[x][y]);
+                }
+            }
 
             draw();
         }
