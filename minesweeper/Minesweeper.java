@@ -1,5 +1,4 @@
 import java.util.Arrays;
-
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -10,6 +9,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 public class Minesweeper extends Application {
     private class Game extends Canvas {
@@ -140,34 +141,47 @@ public class Minesweeper extends Application {
             // Create mines and determine tile distances here
             assert mines < rows * cols;
 
-            int i = 0;
+            int j = 0;
             int[] mineIndex = new int[mines];
 
-            while (i < mines) { // TODO: FIX THIS ITS GARB
+            while (j < mines) { // TODO: FIX THIS ITS GARB
                 int index = (int) (Math.random() * (rows * cols));
 
-                for (int j = 0; j < mineIndex.length; j++) {
-                    if (index == mineIndex[j])
+                for (int k = 0; k < mineIndex.length; k++) {
+                    if (index == mineIndex[k])
                         continue;
                 }
 
-                mineIndex[i] = index;
-                i++;
+                mineIndex[j] = index;
+                j++;
             }
 
             // Set state with mines
             this.state = new int[cols][rows];
 
-            for (int y = 0; y < cols; y++)
-                Arrays.fill(this.state[y], -1); // -1 will represent not set
-
             for (int index : mineIndex)
-                state[index % cols][index / cols] = 0;
+                state[index % cols][index / cols] = -1; // -1 will represent bomb
 
-            for (int y = 0; y < state.length; y++) {
-                for (int x = 0; x < state[y].length; x++) {
-                    System.out.printf("%d %d %d\n", x, y, state[x][y]);
+            // Calculate other values
+            for (int i = 0; i < cols * rows; i++) {
+                int col = i % rows;
+                int row = i / cols;
+                int nearby = 0;
+
+                if (state[row][col] == -1)
+                    continue;
+
+                for (int x = -1; x <= 1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        if (row + x < 0 || row + x >= cols || col + y < 0 || col + y >= rows)
+                            continue;
+
+                        if (state[row + x][col + y] == -1)
+                            nearby++;
+                    }
                 }
+
+                state[row][col] = nearby;
             }
 
             draw();
@@ -240,14 +254,21 @@ public class Minesweeper extends Application {
             ctx.setFill(Color.GREY);
             ctx.fillRect(0, 0, getWidth(), getHeight());
 
-            ctx.setFill(Color.WHITE);
             for (int i = 0; i < cols; i++) {
                 for (int j = 0; j < rows; j++) {
                     double x = i * tileSize + CELL_PADDING + PADDING / 2;
                     double y = j * tileSize + CELL_PADDING + PADDING / 2;
                     double width = tileSize - CELL_PADDING * 2;
                     double height = tileSize - CELL_PADDING * 2;
+
+                    ctx.setFill(Color.WHITE);
                     ctx.fillRect(x, y, width, height);
+
+                    ctx.setFill(Color.BLACK);
+                    ctx.setFont(new Font(20));
+                    ctx.setTextAlign(TextAlignment.CENTER);
+                    String value = state[i][j] == 0 ? "" : state[i][j] == -1 ? "BOMB" : Integer.toString(state[i][j]);
+                    ctx.fillText(value, x + width / 2, y + height / 2 + 5);
                 }
             }
         }
