@@ -31,6 +31,7 @@ public class Minesweeper extends Application {
         private int mines;
         private double tileSize;
         private int[][] state;
+        private boolean[][] flagged;
 
         private GraphicsContext ctx = getGraphicsContext2D();
 
@@ -56,6 +57,7 @@ public class Minesweeper extends Application {
          * @param col The column of the tile
          */
         private void flagTile(int row, int col) {
+            flagged[row][col] = true;
             System.out.println("Flag");
         }
 
@@ -66,6 +68,7 @@ public class Minesweeper extends Application {
          * @param col The column of the tile
          */
         private void questionTile(int row, int col) {
+            flagged[row][col] = false;
             System.out.println("Question");
         }
 
@@ -103,10 +106,12 @@ public class Minesweeper extends Application {
 
             if (e.isPrimaryButtonDown())
                 checkTile(posX, posY);
-            else if (e.isShiftDown() && e.isSecondaryButtonDown())
-                questionTile(posX, posY);
-            else if (e.isSecondaryButtonDown())
-                flagTile(posX, posY);
+            else if (e.isShiftDown() || e.isSecondaryButtonDown()) {
+                if (flagged[posX][posY])
+                    questionTile(posX, posY);
+                else
+                    flagTile(posX, posY);
+            }
 
             draw();
         }
@@ -157,7 +162,8 @@ public class Minesweeper extends Application {
             }
 
             // Set state with mines
-            this.state = new int[cols][rows];
+            state = new int[cols][rows];
+            flagged = new boolean[cols][rows];
 
             for (int index : mineIndex)
                 state[index % cols][index / cols] = -1; // -1 will represent bomb
@@ -269,6 +275,8 @@ public class Minesweeper extends Application {
                     ctx.setTextAlign(TextAlignment.CENTER);
                     String value = state[i][j] == 0 ? "" : state[i][j] == -1 ? "BOMB" : Integer.toString(state[i][j]);
                     ctx.fillText(value, x + width / 2, y + height / 2 + 5);
+                    if (flagged[i][j])
+                        ctx.fillText("F", x + width / 2, y + 15);
                 }
             }
         }
