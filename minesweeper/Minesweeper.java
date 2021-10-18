@@ -32,6 +32,7 @@ public class Minesweeper extends Application {
         private double tileSize;
         private int[][] state;
         private boolean[][] flagged;
+        private boolean[][] questioned;
 
         private GraphicsContext ctx = getGraphicsContext2D();
 
@@ -47,6 +48,8 @@ public class Minesweeper extends Application {
          * @param col The column of the tile
          */
         private void checkTile(int row, int col) {
+            flagged[row][col] = false;
+            questioned[row][col] = false;
             System.out.println("Check");
         }
 
@@ -58,6 +61,7 @@ public class Minesweeper extends Application {
          */
         private void flagTile(int row, int col) {
             flagged[row][col] = true;
+            questioned[row][col] = false;
             System.out.println("Flag");
         }
 
@@ -69,6 +73,7 @@ public class Minesweeper extends Application {
          */
         private void questionTile(int row, int col) {
             flagged[row][col] = false;
+            questioned[row][col] = true;
             System.out.println("Question");
         }
 
@@ -106,7 +111,7 @@ public class Minesweeper extends Application {
 
             if (e.isPrimaryButtonDown())
                 checkTile(posX, posY);
-            else if (e.isShiftDown() || e.isSecondaryButtonDown()) {
+            else if (e.isSecondaryButtonDown()) {
                 if (flagged[posX][posY])
                     questionTile(posX, posY);
                 else
@@ -164,6 +169,7 @@ public class Minesweeper extends Application {
             // Set state with mines
             state = new int[cols][rows];
             flagged = new boolean[cols][rows];
+            questioned = new boolean[cols][rows];
 
             for (int index : mineIndex)
                 state[index % cols][index / cols] = -1; // -1 will represent bomb
@@ -277,6 +283,8 @@ public class Minesweeper extends Application {
                     ctx.fillText(value, x + width / 2, y + height / 2 + 5);
                     if (flagged[i][j])
                         ctx.fillText("F", x + width / 2, y + 15);
+                    if (questioned[i][j])
+                        ctx.fillText("?", x + width / 2, y + 15);
                 }
             }
         }
