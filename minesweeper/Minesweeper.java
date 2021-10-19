@@ -279,7 +279,7 @@ public class Minesweeper extends Application {
                     ctx.setFill(Color.BLACK);
                     ctx.setFont(new Font(20));
                     ctx.setTextAlign(TextAlignment.CENTER);
-                    String value = state[i][j] == 0 ? "" : state[i][j] == -1 ? "BOMB" : Integer.toString(state[i][j]);
+                    String value = state[i][j] == 0 ? "" : state[i][j] == -1 ? "X" : Integer.toString(state[i][j]);
                     ctx.fillText(value, x + width / 2, y + height / 2 + 5);
                     if (flagged[i][j])
                         ctx.fillText("F", x + width / 2, y + 15);
