@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
@@ -31,6 +30,7 @@ public class Minesweeper extends Application {
         private int mines;
         private double tileSize;
         private int[][] state;
+        private boolean[][] visible;
         private boolean[][] flagged;
         private boolean[][] questioned;
 
@@ -48,9 +48,32 @@ public class Minesweeper extends Application {
          * @param col The column of the tile
          */
         private void checkTile(int row, int col) {
+            visible[row][col] = true;
             flagged[row][col] = false;
             questioned[row][col] = false;
             System.out.println("Check");
+
+            if (state[row][col] == 0) {
+                checkNearbyEmptyTiles(row, col);
+                draw();
+            }
+        }
+
+        private void checkNearbyEmptyTiles(int row, int col) {
+            for (int i : new int[] { 0, 0, -1, 1 }) {
+                for (int j : new int[] { -1, 1, 0, 0 }) {
+                    i = row + i;
+                    j = col + j;
+
+                    if (i < 0 || i >= cols || j < 0 || j >= rows)
+                        continue;
+
+                    if (state[i][j] == 0 && !flagged[i][j] && !questioned[i][j] && !visible[i][j]) {
+                        visible[i][j] = true;
+                        checkNearbyEmptyTiles(i, j);
+                    }
+                }
+            }
         }
 
         /**
@@ -168,6 +191,7 @@ public class Minesweeper extends Application {
 
             // Set state with mines
             state = new int[cols][rows];
+            visible = new boolean[cols][rows];
             flagged = new boolean[cols][rows];
             questioned = new boolean[cols][rows];
 
@@ -279,12 +303,16 @@ public class Minesweeper extends Application {
                     ctx.setFill(Color.BLACK);
                     ctx.setFont(new Font(20));
                     ctx.setTextAlign(TextAlignment.CENTER);
-                    String value = state[i][j] == 0 ? "" : state[i][j] == -1 ? "X" : Integer.toString(state[i][j]);
-                    ctx.fillText(value, x + width / 2, y + height / 2 + 5);
-                    if (flagged[i][j])
+
+                    if (visible[i][j]) {
+                        String value = state[i][j] == 0 ? "-1"
+                                : state[i][j] == -1 ? "X" : Integer.toString(state[i][j]);
+                        ctx.fillText(value, x + width / 2, y + height / 2 + 5);
+                    } else if (flagged[i][j]) {
                         ctx.fillText("F", x + width / 2, y + 15);
-                    if (questioned[i][j])
+                    } else if (questioned[i][j]) {
                         ctx.fillText("?", x + width / 2, y + 15);
+                    }
                 }
             }
         }
