@@ -1,9 +1,9 @@
+import components.DifficultyButton;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -263,21 +263,21 @@ public class Minesweeper extends Application {
          */
         public void setDifficulty(String difficulty) throws IllegalArgumentException {
             switch (difficulty.toLowerCase()) {
-                case "beginner":
-                    rows = cols = 9;
-                    mines = 10;
-                    break;
-                case "intermediate":
-                    rows = cols = 16;
-                    mines = 40;
-                    break;
-                case "expert":
-                    rows = 16;
-                    cols = 30;
-                    mines = 99;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Difficulty must be beginner, intermediate, or expert");
+            case "beginner":
+                rows = cols = 9;
+                mines = 10;
+                break;
+            case "intermediate":
+                rows = cols = 16;
+                mines = 40;
+                break;
+            case "expert":
+                rows = 16;
+                cols = 30;
+                mines = 99;
+                break;
+            default:
+                throw new IllegalArgumentException("Difficulty must be beginner, intermediate, or expert");
             }
 
             difficultySet = true;
@@ -318,18 +318,18 @@ public class Minesweeper extends Application {
         }
     }
 
-    private class DifficultyButton extends Button {
-        public DifficultyButton(String label) {
-            super(label);
+    // private class DifficultyButton extends Button {
+    // public DifficultyButton(String label) {
+    // super(label);
 
-            if (label.toLowerCase().equals("random"))
-                setOnMousePressed(e -> game.setDifficulty());
-            else
-                setOnMousePressed(e -> game.setDifficulty(label));
+    // if (label.toLowerCase().equals("random"))
+    // setOnMousePressed(e -> game.setDifficulty());
+    // else
+    // setOnMousePressed(e -> game.setDifficulty(label));
 
-            game.draw();
-        }
-    }
+    // game.draw();
+    // }
+    // }
 
     public static void main(String[] args) {
         launch(args);
@@ -347,10 +347,10 @@ public class Minesweeper extends Application {
         }
 
         // Add buttons for difficulty
-        var easy = new DifficultyButton("Beginner");
-        var intermediate = new DifficultyButton("Intermediate");
-        var expert = new DifficultyButton("Expert");
-        var random = new DifficultyButton("Random");
+        var easy = new DifficultyButton("Beginner", () -> game.setDifficulty("Beginner"));
+        var intermediate = new DifficultyButton("Intermediate", () -> game.setDifficulty("Intermediate"));
+        var expert = new DifficultyButton("Expert", () -> game.setDifficulty("Expert"));
+        var random = new DifficultyButton("Random", () -> game.setDifficulty());
         var controls = new HBox(easy, intermediate, expert, random);
 
         // Create root
